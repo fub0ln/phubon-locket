@@ -1,9 +1,10 @@
-#!name=Phú Bôn - Locket 1.1 kiểm thử
-#!desc=1.1.0: chi xu ly Gold. Khong ep Firebase, upload, QR hay luot xem. Ngay chinh trong phubon-gold.js.
+#!name=Phú Bôn - Locket 1.2 QR kiểm thử
+#!desc=1.2.0: giu Gold cua 1.1; chi them cau hinh QR. Khong ep upload, camera hay luot xem.
 
 [Script]
 phubon_gold = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/v1\/(?:receipts|subscribers\/[^/?]+)\/?(?:\?.*)?$, script-path=https://raw.githubusercontent.com/fub0ln/phubon-locket/main/phubon-gold.js?v=1.1.0, requires-body=true, max-size=-1, timeout=10
 phubon_request = type=http-request, pattern=^https:\/\/api\.revenuecat\.com\/v1\/(?:receipts|subscribers\/[^/?]+)\/?(?:\?.*)?$, script-path=https://raw.githubusercontent.com/fub0ln/phubon-locket/main/phubon-request.js?v=1.1.0, timeout=10
+phubon_qr = type=http-response, pattern=^https:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+, script-path=https://raw.githubusercontent.com/fub0ln/phubon-locket/main/phubon-qr.js?v=1.2.0, requires-body=true, max-size=-1, timeout=10
 
 [MITM]
-hostname = %APPEND%, api.revenuecat.com
+hostname = %APPEND%, api.revenuecat.com, firebaseremoteconfig.googleapis.com

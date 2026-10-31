@@ -1,5 +1,11 @@
 # Thay đổi
 
+## 1.2.0 — 31/10/2026 — QR riêng
+
+Người dùng xác nhận bản 1.1 đã đăng bài, hiển thị người xem và đúng ngày Gold; QR chưa xuất hiện. Bản 1.2 thêm hook `phubon-qr.js` chỉ sửa `qr_code_config` và `profile_menu_v2_enabled`. Giữ các trường QR gốc và toàn bộ thông số upload, camera, storage, CDN, lượt xem. Bỏ qua NO_CHANGE và phản hồi không hợp lệ.
+
+Bản 1.1 dự phòng giữ nguyên nội dung. Mã Gold/request không đổi. Chưa xác nhận menu/mã QR của 1.2 trên điện thoại. Kiểm tra giả lập: 188 phép kiểm tra đã qua; cần thử lại QR và đăng bài trên iPhone.
+
 ## 1.1.0 — 31/10/2026 — bản kiểm thử lỗi chức năng
 
 Người dùng báo QR không hiện, không có danh sách người xem và gửi bài lỗi ngay ở bản 1.0.0. Ngày Gold đổi sang 28/7/2024 sau khi cài DNS bên thứ ba. Các lỗi trên chưa được xác nhận đã hết trên iPhone.

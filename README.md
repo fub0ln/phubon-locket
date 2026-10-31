@@ -1,63 +1,64 @@
-# Phú Bôn — Locket 1.1 kiểm thử
+# Phú Bôn — Locket 1.2 QR kiểm thử
 
-Phiên bản 1.1.0 · 31/10/2026. Bản sửa để loại bỏ các cấu hình có thể gây lỗi đăng bài, QR và lượt xem. Chưa xác nhận các lỗi đã hết trên iPhone.
+Phiên bản 1.2.0 · 31/10/2026.
 
-## 1. Link cài
+Người dùng đã xác nhận bản 1.1 đăng bài được, hiển thị người xem và hiển thị đúng ngày Gold. Mục QR chỉ xuất hiện trong bản 1.0 nhiều tính năng; bản 1.1 chưa có mục này. Bản 1.2 thêm riêng cấu hình menu QR vào nền 1.1; chưa được kiểm thử trên iPhone.
+
+## 1. Link cài và bản dự phòng
 
 Kho mã: https://github.com/fub0ln/phubon-locket
 
-Link mới dùng khi kiểm thử:
+Bản 1.2 để thử QR:
+
+https://raw.githubusercontent.com/fub0ln/phubon-locket/main/PhuBon_1_2.module
+
+Bản 1.1 dự phòng đã có kết quả kiểm thử thực tế:
 
 https://raw.githubusercontent.com/fub0ln/phubon-locket/main/PhuBon_1_1.module
 
-Link cũ `PhuBon.module` cũng đã cập nhật lên cùng nội dung 1.1.0. Chỉ bật một module Locket tại một thời điểm. Tham số `?v=1.1.0` trong các đường dẫn script giúp tránh nạp nhầm tài nguyên cũ.
+`PhuBon.module` trỏ tới bản mới nhất. Chỉ bật một module Locket tại một thời điểm. Không cần nhập lại bộ ZIP 1.0.
 
-## 2. Bản này thay đổi gì?
+## 2. Phạm vi bản 1.2
 
-Bản 1.0.0 giữ quá nhiều thiết lập từ file mẫu: thay đường lưu ảnh/CDN, `upload_main`, nhánh API Firestore/Cloud Functions, cấu hình QR và các cờ lượt xem. Các thiết lập này chưa được xác minh tương thích với phiên bản Locket hiện tại. Đây là các nguyên nhân có thể liên quan, chưa chứng minh là nguyên nhân duy nhất.
+Giữ hai script Gold và request của bản 1.1. Thêm `phubon-qr.js` cho phản hồi Firebase Remote Config của đúng dự án Locket, chỉ sửa hai entry:
 
-Bản 1.1.0 chỉ giữ hai hook RevenueCat xử lý thông tin Gold và header ETag. Module không còn sửa hoặc giải mã Firebase Remote Config; Locket nhận cấu hình chức năng gốc từ máy chủ. `phubon-features.js` trở thành script giữ nguyên phản hồi, để module cũ không tiếp tục ép cấu hình nếu tài nguyên này đã được tải lại.
+- `qr_code_config`: bật `profile_enabled` và `scanning_enabled`, giữ các trường QR khác của máy chủ thay vì thay cả đối tượng bằng hai cờ.
+- `profile_menu_v2_enabled`: bật menu hồ sơ có mục QR.
 
-Bộ 217 caption, 35 mã bộ lọc và các cờ thử nghiệm của 1.0.0 tạm ngừng nạp để kiểm tra chức năng cơ bản. Bản cũ còn trong lịch sử GitHub ở commit `7c0792ce1a5aa6598f24ddcf1bcdd6738d479a05`.
+Chỉ xử lý phản hồi có `entries` hợp lệ và trạng thái UPDATE (hoặc không có trường state). Phản hồi NO_CHANGE, cấu hình rỗng không có entries, JSON lỗi và ứng dụng khác được giữ nguyên. Script không tự gửi yêu cầu mạng và không tự tạo dữ liệu QR của tài khoản.
 
-## 3. Chuẩn bị trên iPhone
+Không đưa trở lại các thiết lập đường lưu ảnh/CDN, bucket, API lượt xem, Firestore, thông số upload, giới hạn quay dài, âm thanh hay bộ caption 1.0. Các phần này giữ giá trị gốc để tách nguyên nhân lỗi. `phubon-features.js` vẫn là script giữ nguyên phản hồi cho các module cũ đã cập nhật tài nguyên.
 
-1. Tạm tắt hồ sơ DNS `2707226.xyz` và các DNS chặn tương tự. Trong Cài đặt → Cài đặt chung → VPN & Quản lý thiết bị → DNS, chọn Tự động nếu mục này xuất hiện. Tên mục có thể khác theo phiên bản iOS. Không bật đồng thời DNS của bên thứ ba trong lần thử này.
-2. Trong Shadowrocket → Config/Cấu hình → Modules/Module, tắt các module Locket cũ. Thêm link `PhuBon_1_1.module` ở trên, tải xuống và bật module 1.1.
-3. Giữ cấu hình nền đang dùng và chứng chỉ Shadowrocket đã cài trên máy. Bật HTTPS Decryption cho cấu hình hiện tại. Module 1.1 chỉ thêm `api.revenuecat.com` vào danh sách MITM. Nếu trước đây tự thêm Firebase vào cấu hình nền chỉ để dùng Locket, bỏ các mục Firebase đó khỏi danh sách giải mã cho lần kiểm thử này.
-4. Ngắt rồi bật lại kết nối Shadowrocket. Giữ Shadowrocket đang kết nối khi thử. Đóng hẳn Locket rồi mở lại; không cần đăng xuất hay xóa ứng dụng.
+Để xử lý QR, bản 1.2 thêm lại tên miền `firebaseremoteconfig.googleapis.com` vào phạm vi giải mã HTTPS. Bản 1.1 không có hook Firebase và vẫn được giữ làm bản dự phòng.
 
-## 4. Kiểm thử theo thứ tự
+## 3. Cài và kiểm thử trên iPhone
 
-| Mục | Cách thử | Ghi nhận |
-| --- | --- | --- |
-| Đăng bài cơ bản | Chụp một ảnh mới trong Locket, dùng caption mặc định ngắn rồi gửi theo cách bình thường. | Đăng thành công hay lỗi ngay; nội dung thông báo lỗi. |
-| Ảnh thư viện/video | Chỉ thử sau khi ảnh cơ bản gửi được; dùng các nút mà giao diện gốc đang cung cấp. | Phân biệt lỗi của ảnh mới, ảnh thư viện và video. |
-| QR | Mở QR tài khoản nếu giao diện gốc có mục này. | Mã có hiện không; mục có còn được ứng dụng cung cấp không. |
-| Người xem | Kiểm tra bài có lượt xem sau khi được người khác mở, phân biệt với reaction. | Giao diện có trả danh sách người xem hay vẫn chỉ có reaction. |
-| Ngày Gold | Kiểm tra sau khi thông tin đăng ký được tải lại với Shadowrocket đang bật. | Ngày đang hiển thị; có còn mốc từ DNS cũ không. |
+1. Giữ DNS ở Tự động; tạm tắt DNS 2707226.xyz và các DNS chặn khác trong lần thử này.
+2. Trong Shadowrocket → Config/Cấu hình → Modules/Module, tắt bản 1.1 và mọi module Locket khác. Thêm link `PhuBon_1_2.module`, tải xuống và bật riêng bản 1.2.
+3. Giữ chứng chỉ Shadowrocket đã được tin cậy trên máy và bật HTTPS Decryption cho cấu hình đang dùng. Module thêm hai tên miền `api.revenuecat.com` và `firebaseremoteconfig.googleapis.com`. Kết nối lại Shadowrocket và giữ nó đang bật khi thử.
+4. Đóng hẳn rồi mở lại Locket. Kiểm tra có mục QR hay không, bấm vào và kiểm tra mã QR thật có hiển thị hay vẫn trắng/báo lỗi.
+5. Đăng thử một ảnh mới với caption mặc định và kiểm tra lại người xem/ngày Gold, để xác nhận việc thêm QR không làm mất các chức năng đã chạy được.
 
-Nếu ảnh cơ bản vẫn lỗi, thử thêm một lần với cả DNS riêng và Shadowrocket đều tắt, để so sánh tác động của kết nối đang chạy. Bước này không tự xóa cấu hình hoặc thông tin Gold đã lưu trong app. Gửi lại phiên bản Locket và ảnh thông báo lỗi; không cần gửi token, mật khẩu hay toàn bộ nhật ký mạng.
+Nếu thêm bản 1.2 làm lỗi đăng bài hoặc mất người xem, tắt nó và dùng lại link 1.1 dự phòng. Báo lại phiên bản Locket cùng ảnh thông báo lỗi. Không cần gửi token hay toàn bộ nhật ký mạng.
 
-Đổi module không tự xóa Remote Config đã lưu và kích hoạt trong Locket. Cấu hình hoặc ngày cũ có thể còn được app sử dụng đến khi nó tải và kích hoạt dữ liệu mới. Không xóa app chỉ để ép làm mới khi chưa kiểm tra việc sao lưu và đồng bộ dữ liệu.
+Locket có thể tiếp tục sử dụng cấu hình đã lưu trước đó. Chỉ cập nhật module không tự buộc Firebase tải và kích hoạt cấu hình mới, nên chưa thấy QR ngay không đủ để kết luận script đã chạy hay chưa. Không xóa ứng dụng hoặc đăng xuất chỉ để ép làm mới cấu hình.
 
-## 5. Ngày Gold và giới hạn
+Nếu menu QR đã hiện nhưng nội dung vẫn trắng, cần kiểm tra tiếp dữ liệu mà app/máy chủ cung cấp. Không coi việc hiện nút là đã sửa xong mã QR; không tạo mã tài khoản giả để che lỗi.
 
-Trong `phubon-gold.js`, `SETTINGS.goldSince` vẫn là `2026-10-31T00:00:00+07:00`; `goldUntil` là `2099-12-31T23:59:59+07:00`. Script giữ ngày nhất quán giữa đăng ký và quyền Gold trong phản hồi xử lý trên thiết bị.
+## 4. Ngày Gold và giới hạn
 
-Đây không phải giao dịch mua và không thay đổi quyền được máy chủ Locket công nhận. Hiển thị Gold không chứng minh tính năng yêu cầu máy chủ sẽ hoạt động. Bản 1.1 không tạo dữ liệu người xem, không tạo QR giả và không ép mở nhánh API chưa được xác minh. QR và danh sách người xem cần dữ liệu thật mà phiên bản app/máy chủ cung cấp.
+`SETTINGS.goldSince` trong `phubon-gold.js` vẫn là `2026-10-31T00:00:00+07:00`; `goldUntil` là `2099-12-31T23:59:59+07:00`. Đây là dữ liệu đăng ký được xử lý trên thiết bị, không phải giao dịch mua và không thay đổi quyền được máy chủ công nhận.
 
-Mốc ngày đổi thành 28/7/2024 khi dùng DNS bên thứ ba phù hợp với việc thông tin đăng ký mới đến từ một nguồn khác. Chưa thu thập phản hồi mạng trên iPhone để xác định chính xác thứ tự xử lý/cache. Kiểm thử chỉ một nguồn trước khi kết luận.
+Bản 1.2 không tạo danh sách người xem và không đổi API đăng bài. Hiệu quả các tính năng phụ thuộc phiên bản Locket và phản hồi của máy chủ.
 
-## 6. Kiểm tra mã và bước tiếp theo
+## 5. Kiểm tra mã và bước tiếp theo
 
-Chạy `node kiem_tra.cjs` trong thư mục chứa các file để kiểm tra trên dữ liệu giả lập. Kiểm tra bao gồm ngày Gold, giữ nguyên ứng dụng khác, phản hồi lỗi và việc các API đăng bài/QR/lượt xem/Firebase không bị các hook Gold xử lý. Kết quả này không thay thế kiểm thử trên điện thoại.
+`node kiem_tra.cjs` chạy 188 kiểm tra giả lập ở bản 1.2: bảo toàn cấu hình upload/người xem/camera, giữ trường QR gốc, phạm vi URL, NO_CHANGE, phản hồi lỗi và ngày Gold. Kết quả này không thay cho thử trên iPhone.
 
-Chỉ tiếp tục tạo NextDNS riêng sau khi người dùng xác nhận chức năng cơ bản ổn định trong lần thử không có DNS chặn. Chặn RevenueCat trước khi kiểm thử sẽ gây khó phân biệt cache cũ với dữ liệu mới và có thể ngăn cập nhật ngày Gold.
+Trình tạo module: `python3 tao_module.py --owner TEN_TAI_KHOAN` tạo bản mới có QR. Thêm `--baseline` để tạo bản 1.1 chỉ có Gold.
 
-Tham khảo:
+Tiếp tục thử phần quay dài/âm thanh riêng sau khi QR ổn. NextDNS riêng chỉ làm sau khi kết quả chức năng cơ bản được xác nhận; chặn RevenueCat trong lúc thử có thể ngăn nhận dữ liệu ngày Gold mới.
 
-- https://firebase.google.com/docs/remote-config
-- https://www.revenuecat.com/docs/test-and-launch/debugging/caching
-- https://www.revenuecat.com/docs/customers/trusted-entitlements
-- https://support.apple.com/en-us/102390
+Bộ caption và thiết lập 1.0 vẫn có trong lịch sử tại commit `7c0792ce1a5aa6598f24ddcf1bcdd6738d479a05`.
+
+Tham khảo: https://firebase.google.com/docs/remote-config và https://www.revenuecat.com/docs/test-and-launch/debugging/caching

@@ -3,12 +3,12 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
-const scripts = Object.fromEntries(['gold', 'request', 'features'].map(name =>
+const scripts = Object.fromEntries(['gold', 'request', 'features', 'qr'].map(name =>
   [name, fs.readFileSync(path.join(__dirname, `phubon-${name}.js`), 'utf8')]));
 let checks = 0;
 function check(value, message) { assert.ok(value, message); checks++; }
 function run(name, options = {}) {
-  const isFeatures = name === 'features';
+  const isFeatures = name === 'features' || name === 'qr';
   const request = {
     url: options.url || (isFeatures
       ? 'https://firebaseremoteconfig.googleapis.com/v1/projects/locket-4252a/namespaces/firebase:fetch'
@@ -93,11 +93,41 @@ for (const url of [
     check(Object.keys(run(name, {url})).length === 0, `${name} leaves ${url} unchanged`);
   }
 }
-const moduleSource = fs.readFileSync(path.join(__dirname, 'PhuBon.module'), 'utf8');
+const moduleSource = fs.readFileSync(path.join(__dirname, 'PhuBon_1_1.module'), 'utf8');
 check(!moduleSource.includes('firebaseremoteconfig.googleapis.com'), 'Firebase is absent from active hooks and MITM hostnames');
 check(!moduleSource.includes('phubon_features'), 'Remote Config rewrite is disabled');
 check((moduleSource.match(/script-path=/g) || []).length === 2, 'only the two RevenueCat hooks remain');
 check((moduleSource.match(/\?v=1\.1\.0/g) || []).length === 2, 'new version URLs avoid an old script cache');
+// QR patch must preserve the complete server-provided configuration except
+// the two QR menu keys; it must not reintroduce the v1.0 upload/view overrides.
+const qrPayload = { state: 'UPDATE', entries: {
+  upload_main: 'keep-server-mode', storage_bucket: 'gs://keep-server-bucket',
+  camera: '{"server_duration":10}',
+  get_moment_views_as_cloud_function: 'keep-server-api',
+  feature_gates: '{"server_gold_gate":"keep"}',
+  qr_code_config: '{"profile_enabled":false,"scanning_enabled":false,"server_template":"keep","nested":{"preserve":true}}',
+  profile_menu_v2_enabled: 'false', unknown_future_setting: 'preserve'
+} };
+const qrOutput = JSON.parse(run('qr', {payload: qrPayload}).body);
+const qrExpected = JSON.parse(JSON.stringify(qrPayload));
+qrExpected.entries.qr_code_config = JSON.stringify({profile_enabled:true, scanning_enabled:true, server_template:'keep', nested:{preserve:true}});
+qrExpected.entries.profile_menu_v2_enabled = 'true';
+check(JSON.stringify(qrOutput) === JSON.stringify(qrExpected), 'QR patch changes only the intended two entries and preserves other QR fields');
+const objectQr = JSON.parse(run('qr', {payload:{entries:{qr_code_config:{server_template:'keep'}}}}).body);
+check(typeof objectQr.entries.qr_code_config === 'object' && objectQr.entries.qr_code_config.server_template === 'keep', 'object QR representation preserved');
+for (const options of [
+  {ua:'DifferentApp'}, {headers:{}}, {raw:'not json'}, {raw:'null'},
+  {payload:{state:'NO_CHANGE',entries:{qr_code_config:'{}'}}},
+  {payload:{state:'EMPTY_CONFIG',entries:{}}}, {payload:{state:'UPDATE'}},
+  {payload:{entries:{qr_code_config:'not json'}}},
+  {payload:{entries:{qr_code_config:'[]'}}},
+  {url:'https://firebaseremoteconfig.googleapis.com/v1/projects/another-app/namespaces/firebase:fetch'},
+  {url:'https://firebaseremoteconfig.googleapis.com.attacker.invalid/v1/projects/locket-4252a/namespaces/firebase:fetch'}
+]) check(Object.keys(run('qr', options)).length === 0, 'QR patch preserves unrelated, invalid and unchanged responses');
+const qrModule = fs.readFileSync(path.join(__dirname,'PhuBon.module'),'utf8');
+check(qrModule === fs.readFileSync(path.join(__dirname,'PhuBon_1_2.module'),'utf8'), 'latest and explicit QR module are identical');
+check((qrModule.match(/script-path=/g)||[]).length === 3 && qrModule.includes('phubon-qr.js?v=1.2.0'), 'only the dedicated QR hook is added');
+check(!qrModule.includes('phubon-features.js'), 'old bulk feature rewrite stays disabled');
 for (const source of Object.values(scripts)) {
   check(!/\$(?:httpClient|httpAPI|task)|\bfetch\s*\(|XMLHttpRequest|\beval\s*\(/.test(source), 'no active network calls or evaluated downloads');
 }
