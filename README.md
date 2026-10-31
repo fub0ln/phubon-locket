@@ -1,101 +1,63 @@
-# Phú Bôn — bộ cấu hình Locket cá nhân
+# Phú Bôn — Locket 1.1 kiểm thử
 
-Phiên bản 1.0.0 · Chuẩn bị ngày 31/10/2026.
+Phiên bản 1.1.0 · 31/10/2026. Bản sửa để loại bỏ các cấu hình có thể gây lỗi đăng bài, QR và lượt xem. Chưa xác nhận các lỗi đã hết trên iPhone.
 
-Đây là bộ mã tùy chỉnh phản hồi trên điện thoại. Nó không tạo giao dịch mua với Apple và không ghi nhận gói trả phí trên máy chủ Locket. Hiệu quả phụ thuộc phiên bản ứng dụng, cách xác thực và dữ liệu được lưu trong bộ nhớ đệm. Bản này đã kiểm tra bằng dữ liệu giả lập, chưa chạy trên iPhone của bạn.
+## 1. Link cài
 
-## 1. Các file và link cài
+Kho mã: https://github.com/fub0ln/phubon-locket
 
-| File | Chức năng |
-| --- | --- |
-| `phubon-gold.js` | Sửa thông tin quyền Gold trong phản hồi RevenueCat; chỉnh ngày ở đầu file. |
-| `phubon-request.js` | Bỏ header ETag của đúng các yêu cầu Locket được nhận diện để có phản hồi mới. |
-| `phubon-features.js` | Cá nhân hóa cấu hình tính năng từ file bạn cung cấp, giữ 217 mục caption và 35 mã bộ lọc. |
-| `PhuBon.module` | Module đã điền đường dẫn tới ba script trong kho `fub0ln/phubon-locket`. |
-| `PhuBon.template.module` | Mẫu để tạo thêm một bản trong kho khác. |
-| `tao_module.py` | Tạo module với tên GitHub thực tế, không chứa thông tin đăng nhập. |
+Link mới dùng khi kiểm thử:
 
-Kho quản lý của bạn: https://github.com/fub0ln/phubon-locket
+https://raw.githubusercontent.com/fub0ln/phubon-locket/main/PhuBon_1_1.module
 
-Link module dùng để nhập vào Shadowrocket:
+Link cũ `PhuBon.module` cũng đã cập nhật lên cùng nội dung 1.1.0. Chỉ bật một module Locket tại một thời điểm. Tham số `?v=1.1.0` trong các đường dẫn script giúp tránh nạp nhầm tài nguyên cũ.
 
-https://raw.githubusercontent.com/fub0ln/phubon-locket/main/PhuBon.module
+## 2. Bản này thay đổi gì?
 
-Đây là kho công khai để phần mềm có thể tải các file Raw mà không cần đăng nhập. "Cá nhân" nghĩa là bản bạn tự quản lý. Ba script đều trỏ về kho này.
+Bản 1.0.0 giữ quá nhiều thiết lập từ file mẫu: thay đường lưu ảnh/CDN, `upload_main`, nhánh API Firestore/Cloud Functions, cấu hình QR và các cờ lượt xem. Các thiết lập này chưa được xác minh tương thích với phiên bản Locket hiện tại. Đây là các nguyên nhân có thể liên quan, chưa chứng minh là nguyên nhân duy nhất.
 
-## 2. Ngày Gold
+Bản 1.1.0 chỉ giữ hai hook RevenueCat xử lý thông tin Gold và header ETag. Module không còn sửa hoặc giải mã Firebase Remote Config; Locket nhận cấu hình chức năng gốc từ máy chủ. `phubon-features.js` trở thành script giữ nguyên phản hồi, để module cũ không tiếp tục ép cấu hình nếu tài nguyên này đã được tải lại.
 
-Mở `phubon-gold.js`, tìm `SETTINGS`:
+Bộ 217 caption, 35 mã bộ lọc và các cờ thử nghiệm của 1.0.0 tạm ngừng nạp để kiểm tra chức năng cơ bản. Bản cũ còn trong lịch sử GitHub ở commit `7c0792ce1a5aa6598f24ddcf1bcdd6738d479a05`.
 
-```javascript
-goldSince: "2026-10-31T00:00:00+07:00",
-goldUntil: "2099-12-31T23:59:59+07:00",
-```
+## 3. Chuẩn bị trên iPhone
 
-Đây là hai giá trị mẫu, chưa phải ngày bạn đã chọn. Thay `goldSince` bằng ngày bạn muốn dùng; `+07:00` là múi giờ Việt Nam. Script tự ghi ngày bắt đầu nhất quán trong các trường đăng ký và quyền Gold. Ngày kết thúc phải sau ngày bắt đầu. Giao diện Locket có thể lấy ngày từ một nguồn khác nên việc thay mã không bảo đảm đổi được dòng ngày đang hiển thị.
+1. Tạm tắt hồ sơ DNS `2707226.xyz` và các DNS chặn tương tự. Trong Cài đặt → Cài đặt chung → VPN & Quản lý thiết bị → DNS, chọn Tự động nếu mục này xuất hiện. Tên mục có thể khác theo phiên bản iOS. Không bật đồng thời DNS của bên thứ ba trong lần thử này.
+2. Trong Shadowrocket → Config/Cấu hình → Modules/Module, tắt các module Locket cũ. Thêm link `PhuBon_1_1.module` ở trên, tải xuống và bật module 1.1.
+3. Giữ cấu hình nền đang dùng và chứng chỉ Shadowrocket đã cài trên máy. Bật HTTPS Decryption cho cấu hình hiện tại. Module 1.1 chỉ thêm `api.revenuecat.com` vào danh sách MITM. Nếu trước đây tự thêm Firebase vào cấu hình nền chỉ để dùng Locket, bỏ các mục Firebase đó khỏi danh sách giải mã cho lần kiểm thử này.
+4. Ngắt rồi bật lại kết nối Shadowrocket. Giữ Shadowrocket đang kết nối khi thử. Đóng hẳn Locket rồi mở lại; không cần đăng xuất hay xóa ứng dụng.
 
-## 3. Đưa lên GitHub
+## 4. Kiểm thử theo thứ tự
 
-Kho `fub0ln/phubon-locket` là địa chỉ đã chọn cho bộ này. Các bước dưới đây dành cho việc tự cập nhật hoặc đưa thêm một bản sang kho khác. Không gửi mật khẩu hay token vào chat.
+| Mục | Cách thử | Ghi nhận |
+| --- | --- | --- |
+| Đăng bài cơ bản | Chụp một ảnh mới trong Locket, dùng caption mặc định ngắn rồi gửi theo cách bình thường. | Đăng thành công hay lỗi ngay; nội dung thông báo lỗi. |
+| Ảnh thư viện/video | Chỉ thử sau khi ảnh cơ bản gửi được; dùng các nút mà giao diện gốc đang cung cấp. | Phân biệt lỗi của ảnh mới, ảnh thư viện và video. |
+| QR | Mở QR tài khoản nếu giao diện gốc có mục này. | Mã có hiện không; mục có còn được ứng dụng cung cấp không. |
+| Người xem | Kiểm tra bài có lượt xem sau khi được người khác mở, phân biệt với reaction. | Giao diện có trả danh sách người xem hay vẫn chỉ có reaction. |
+| Ngày Gold | Kiểm tra sau khi thông tin đăng ký được tải lại với Shadowrocket đang bật. | Ngày đang hiển thị; có còn mốc từ DNS cũ không. |
 
-Nếu tự làm trên trình duyệt:
+Nếu ảnh cơ bản vẫn lỗi, thử thêm một lần với cả DNS riêng và Shadowrocket đều tắt, để so sánh tác động của kết nối đang chạy. Bước này không tự xóa cấu hình hoặc thông tin Gold đã lưu trong app. Gửi lại phiên bản Locket và ảnh thông báo lỗi; không cần gửi token, mật khẩu hay toàn bộ nhật ký mạng.
 
-1. Đăng nhập GitHub, tạo repository tên `phubon-locket`; chọn quyền hiển thị phù hợp với cách tải file bên trên.
-2. Tải ba file `.js` lên thư mục gốc bằng **Add file → Upload files**, rồi lưu thay đổi bằng nút Commit/Propose changes của giao diện.
-3. Nếu dùng kho khác, mở `PhuBon.template.module` bằng trình soạn thảo văn bản và thay toàn bộ `GITHUB_USERNAME` bằng tên tài khoản của bạn. Với kho `fub0ln/phubon-locket`, file `PhuBon.module` đã được điền sẵn. Nếu đổi tên repository hoặc nhánh, sửa các phần `phubon-locket/main` tương ứng trong ba đường dẫn.
-4. Lưu thành `PhuBon.module` với mã hóa UTF-8, rồi tải file đó lên cùng thư mục gốc.
-5. Mở từng file trên GitHub, chọn **Raw**. Với file JavaScript phải thấy mã, không phải trang 404 hay trang yêu cầu đăng nhập.
-6. Lấy link Raw của `PhuBon.module` để nhập vào Shadowrocket.
+Đổi module không tự xóa Remote Config đã lưu và kích hoạt trong Locket. Cấu hình hoặc ngày cũ có thể còn được app sử dụng đến khi nó tải và kích hoạt dữ liệu mới. Không xóa app chỉ để ép làm mới khi chưa kiểm tra việc sao lưu và đồng bộ dữ liệu.
 
-Trên máy có Python 3, có thể tạo module tự động thay cho bước 3–4:
+## 5. Ngày Gold và giới hạn
 
-```bash
-python3 tao_module.py --owner TEN_TAI_KHOAN --output PhuBon.module
-```
+Trong `phubon-gold.js`, `SETTINGS.goldSince` vẫn là `2026-10-31T00:00:00+07:00`; `goldUntil` là `2099-12-31T23:59:59+07:00`. Script giữ ngày nhất quán giữa đăng ký và quyền Gold trong phản hồi xử lý trên thiết bị.
 
-Chạy lệnh trong thư mục chứa các file. Mẫu dùng nhánh `main`; nếu kho dùng nhánh khác, thêm `--ref TEN_NHANH`. Nếu đổi tên kho, thêm `--repo TEN_KHO`.
+Đây không phải giao dịch mua và không thay đổi quyền được máy chủ Locket công nhận. Hiển thị Gold không chứng minh tính năng yêu cầu máy chủ sẽ hoạt động. Bản 1.1 không tạo dữ liệu người xem, không tạo QR giả và không ép mở nhánh API chưa được xác minh. QR và danh sách người xem cần dữ liệu thật mà phiên bản app/máy chủ cung cấp.
 
-## 4. Cài trên iPhone
+Mốc ngày đổi thành 28/7/2024 khi dùng DNS bên thứ ba phù hợp với việc thông tin đăng ký mới đến từ một nguồn khác. Chưa thu thập phản hồi mạng trên iPhone để xác định chính xác thứ tự xử lý/cache. Kiểm thử chỉ một nguồn trước khi kết luận.
 
-Các nhãn có thể khác đôi chút theo phiên bản/ngôn ngữ Shadowrocket. Bạn cần thực hiện phần này trực tiếp trên điện thoại.
+## 6. Kiểm tra mã và bước tiếp theo
 
-1. Mở Shadowrocket, vào **Config/Cấu hình → Modules/Module** và thêm link Raw của `PhuBon.module`. Tải về và bật module.
-2. Tắt module Locket cũ để các script không ghi đè lẫn nhau. Cấu hình nền và các module không liên quan vẫn được quản lý như trước.
-3. Trong cấu hình đang dùng, mở mục **HTTPS Decryption/Giải mã HTTPS**. Tạo chứng chỉ mới ngay trên máy bằng Shadowrocket, rồi chọn cài chứng chỉ. Bộ file này không kèm chứng chỉ hoặc khóa riêng dùng chung.
-4. Khi iOS đã tải hồ sơ, vào **Cài đặt → Cài đặt chung → VPN & Quản lý thiết bị** (hoặc mục **Đã tải về hồ sơ**) để cài hồ sơ chứng chỉ vừa tạo.
-5. Vào **Cài đặt → Cài đặt chung → Giới thiệu → Cài đặt tin cậy chứng nhận**, bật tin cậy hoàn toàn cho đúng chứng chỉ Shadowrocket vừa tạo. Bật giải mã HTTPS trong cấu hình đang dùng.
-6. Kiểm tra danh sách giải mã có hai tên miền `api.revenuecat.com` và `firebaseremoteconfig.googleapis.com` do module thêm vào. Chúng là dịch vụ dùng chung giữa nhiều app; script tự kiểm tra User-Agent Locket trước khi sửa dữ liệu. Không mở rộng sang `*`.
-7. Bật kết nối Shadowrocket với cấu hình hợp lệ của bạn. Bộ file này không cung cấp máy chủ proxy.
-8. Đóng hẳn Locket và mở lại. Kiểm tra tên/huy hiệu, ngày Gold, bộ caption và thử gửi một ảnh/video đến một người bạn để kiểm tra thực tế.
+Chạy `node kiem_tra.cjs` trong thư mục chứa các file để kiểm tra trên dữ liệu giả lập. Kiểm tra bao gồm ngày Gold, giữ nguyên ứng dụng khác, phản hồi lỗi và việc các API đăng bài/QR/lượt xem/Firebase không bị các hook Gold xử lý. Kết quả này không thay thế kiểm thử trên điện thoại.
 
-Việc bật cờ lượt xem, bạn bè hoặc video trong cấu hình không chứng minh máy chủ hỗ trợ chúng. Không dùng mua/khôi phục mua hàng như một bước để tạo giao dịch.
+Chỉ tiếp tục tạo NextDNS riêng sau khi người dùng xác nhận chức năng cơ bản ổn định trong lần thử không có DNS chặn. Chặn RevenueCat trước khi kiểm thử sẽ gây khó phân biệt cache cũ với dữ liệu mới và có thể ngăn cập nhật ngày Gold.
 
-## 5. Nếu chưa có tác dụng
+Tham khảo:
 
-Kiểm tra link Raw ba script có mở được không; module mới có đang bật không; module cũ có đang chạy cùng không; chứng chỉ có được tin cậy và giải mã có bật cho cấu hình hiện tại không. Trong nhật ký Shadowrocket, chỉ kiểm tra trạng thái chạy script và lỗi; không cần chia sẻ nội dung yêu cầu, token hay định danh tài khoản.
-
-Nếu script không nhận diện User-Agent Locket, nó sẽ giữ nguyên dữ liệu. Nếu Locket chặn chứng chỉ can thiệp hoặc kiểm tra chữ ký phản hồi, bộ này có thể không hoạt động; kết quả kiểm thử giả lập không chứng minh khả năng vượt qua các kiểm tra đó. Bộ mã không bỏ các header kiểm tra chữ ký.
-
-Khi sửa ngày hoặc mã JavaScript trên GitHub, tải lại tài nguyên script trong Shadowrocket (mục quản lý Script URL hoặc dùng/biên dịch lại cấu hình, tùy phiên bản), rồi mở lại Locket. Cập nhật riêng module có thể chưa cập nhật ngay script đã lưu trong máy.
-
-Để ngừng sử dụng: tắt module và khởi động lại Locket. Nếu không dùng giải mã HTTPS cho việc nào khác, tắt giải mã và gỡ hồ sơ chứng chỉ tương ứng. Trạng thái giao diện có thể còn trong bộ nhớ đệm một thời gian.
-
-## 6. Phạm vi chỉnh sửa và nguồn
-
-`phubon-gold.js` và `phubon-request.js` được viết riêng cho bộ này. Chỉ sửa phản hồi có cấu trúc dự kiến, URL khớp và User-Agent chứa Locket; lỗi JSON sẽ giữ nguyên phản hồi. Không có yêu cầu mạng do các script này tự gửi.
-
-`phubon-features.js` được chỉnh từ file “Markdown đã dán (1).md” bạn cung cấp: giữ cấu hình tính năng, 217 mục caption và 35 mã bộ lọc; thay thông báo thành Phú Bôn; bỏ quảng bá kênh và hai ảnh từ máy chủ bên ngoài. Các ghi chú nguồn về Locket Remote Config Rewrite và nhóm caption của Duy Vinh được giữ trong mã. Không tuyên bố bộ caption gốc do Phú Bôn sáng tác. Bộ file vẫn chứa các thiết lập danh bạ, bộ nhớ đệm, quảng cáo và Sentry theo file nguồn; cần kiểm tra tác dụng thực tế trên app.
-
-Tài liệu tham khảo:
-
-- https://www.revenuecat.com/docs/api-v1/customer-info-model
+- https://firebase.google.com/docs/remote-config
+- https://www.revenuecat.com/docs/test-and-launch/debugging/caching
 - https://www.revenuecat.com/docs/customers/trusted-entitlements
-- https://docs.github.com/en/repositories/working-with-files/managing-files/adding-a-file-to-a-repository
-- https://docs.github.com/en/repositories/working-with-files/using-files/viewing-and-understanding-files
 - https://support.apple.com/en-us/102390
-- Module tham khảo do bạn cung cấp: https://raw.githubusercontent.com/NightmarketServer/Module-Shadowrocket-NMS/refs/heads/main/Module-Shadowrocket-NMS/Locket%20Gold/LocketGold2/Locketv13.module
-
-
-## 7. Kiểm tra mã khi tự chỉnh sửa
-
-Nếu máy có Node.js, chạy `node kiem_tra.cjs` trong thư mục chứa các file để kiểm tra với dữ liệu giả lập, không sử dụng tài khoản thật. Bản 1.0.0 đã qua 79 phép kiểm tra, bao gồm giữ nguyên dữ liệu ứng dụng khác, phản hồi JSON lỗi, tính nhất quán ngày và việc không tự gửi yêu cầu mạng. Kết quả này không thay thế thử nghiệm trên iPhone.

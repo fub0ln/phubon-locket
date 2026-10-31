@@ -1,0 +1,9 @@
+#!name=Phú Bôn - Locket 1.1 kiểm thử
+#!desc=1.1.0: chi xu ly Gold. Khong ep Firebase, upload, QR hay luot xem. Ngay chinh trong phubon-gold.js.
+
+[Script]
+phubon_gold = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/v1\/(?:receipts|subscribers\/[^/?]+)\/?(?:\?.*)?$, script-path=https://raw.githubusercontent.com/fub0ln/phubon-locket/main/phubon-gold.js?v=1.1.0, requires-body=true, max-size=-1, timeout=10
+phubon_request = type=http-request, pattern=^https:\/\/api\.revenuecat\.com\/v1\/(?:receipts|subscribers\/[^/?]+)\/?(?:\?.*)?$, script-path=https://raw.githubusercontent.com/fub0ln/phubon-locket/main/phubon-request.js?v=1.1.0, timeout=10
+
+[MITM]
+hostname = %APPEND%, api.revenuecat.com

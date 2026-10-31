@@ -14,17 +14,15 @@ def render(owner: str, repo: str = "phubon-locket", ref: str = "main") -> str:
         raise ValueError("Chi dung ten nhanh don gian hoac ma commit")
     base = f"https://raw.githubusercontent.com/{owner}/{repo}/{ref}"
     pattern = r"^https:\/\/api\.revenuecat\.com\/v1\/(?:receipts|subscribers\/[^/?]+)\/?(?:\?.*)?$"
-    firebase = r"^https:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+"
-    return f"""#!name=Phú Bôn - Locket cá nhân
-#!desc=Phien ban ca nhan 1.0.0. Ngay Gold chinh trong phubon-gold.js. Chua kiem thu tren iPhone.
+    return f"""#!name=Phú Bôn - Locket 1.1 kiểm thử
+#!desc=1.1.0: chi xu ly Gold. Khong ep Firebase, upload, QR hay luot xem. Ngay chinh trong phubon-gold.js.
 
 [Script]
-phubon_gold = type=http-response, pattern={pattern}, script-path={base}/phubon-gold.js, requires-body=true, max-size=-1, timeout=10
-phubon_request = type=http-request, pattern={pattern}, script-path={base}/phubon-request.js, timeout=10
-phubon_features = type=http-response, pattern={firebase}, script-path={base}/phubon-features.js, requires-body=true, max-size=-1, timeout=10
+phubon_gold = type=http-response, pattern={pattern}, script-path={base}/phubon-gold.js?v=1.1.0, requires-body=true, max-size=-1, timeout=10
+phubon_request = type=http-request, pattern={pattern}, script-path={base}/phubon-request.js?v=1.1.0, timeout=10
 
 [MITM]
-hostname = %APPEND%, api.revenuecat.com, firebaseremoteconfig.googleapis.com
+hostname = %APPEND%, api.revenuecat.com
 """
 
 

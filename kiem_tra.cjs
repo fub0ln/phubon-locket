@@ -23,12 +23,15 @@ function run(name, options = {}) {
       } }
     })) : options.raw;
   const beforeRequest = JSON.stringify(request);
+  const response = { body };
+  const beforeResponse = JSON.stringify(response);
   const output = [];
   vm.runInNewContext(scripts[name], {
-    $request: request, $response: { body }, $done: value => output.push(value)
+    $request: request, $response: response, $done: value => output.push(value)
   }, { timeout: 1000 });
   check(output.length === 1, `${name}: calls done exactly once`);
   check(JSON.stringify(request) === beforeRequest, `${name}: input request not mutated`);
+  check(JSON.stringify(response) === beforeResponse, `${name}: input response not mutated`);
   return JSON.parse(JSON.stringify(output[0]));
 }
 const goldResult = JSON.parse(run('gold').body);
@@ -60,17 +63,41 @@ check(!('X-RevenueCat-ETag' in requestResult.headers), 'ETag removed');
 check(requestResult.headers.Authorization === 'synthetic-header', 'other headers preserved');
 check(requestResult.headers['X-RevenueCat-Response-Signature'] === 'preserve', 'signature-related header preserved');
 check(Object.keys(run('request', {ua: 'DifferentApp/1.0.0'})).length === 0, 'other-app request unchanged');
-const features = JSON.parse(run('features').body);
-check(features.entries.existing_flag === 'keep', 'unrelated remote setting preserved');
-const overlays = JSON.parse(features.entries.overlay_items);
-check(overlays.reduce((sum, section) => sum + section.items.length, 0) === 217, '217 overlay entries retained');
-check(JSON.parse(features.entries.camera_filter_config).picker_filters.length === 35, '35 filter identifiers retained');
-check(features.Attention.includes('Phú Bôn'), 'personalization applied');
-check(!JSON.stringify(features).includes('i.postimg.cc'), 'external promotional images removed');
+// Regression: old module references must no longer overwrite upload, QR,
+// viewers, captions, CDN, storage, or any other Remote Config settings.
+const originalRemoteConfig = { state: 'UPDATE', entries: {
+  upload_main: 'server-upload-mode',
+  storage_bucket: 'gs://server-selected-bucket',
+  cdn_domain_replacements: '{"original":"original-cdn"}',
+  qr_code_config: '{"original_qr_setting":true}',
+  get_moment_views_as_cloud_function: 'server-selected-view-api',
+  overlay_items: '[{"original_caption":"keep"}]',
+  unknown_future_setting: 'preserve'
+} };
+check(Object.keys(run('features', {payload: originalRemoteConfig})).length === 0,
+  'compatibility script leaves complete server configuration untouched');
 for (const options of [
-  {ua: 'DifferentApp'}, {raw: 'not json'}, {raw: 'null'}, {payload: {entries: []}},
-  {url: 'https://firebaseremoteconfig.googleapis.com/v1/projects/another-app/namespaces/firebase:fetch'}
-]) check(Object.keys(run('features', options)).length === 0, 'unrelated or invalid Remote Config unchanged');
+  {ua: 'DifferentApp'}, {raw: 'not json'}, {raw: 'null'},
+  {payload: {state: 'NO_CHANGE'}}, {payload: {entries: []}}
+]) check(Object.keys(run('features', options)).length === 0,
+  'compatibility script preserves invalid and NO_CHANGE responses');
+
+// Regression: Gold hooks may not run on account, QR, view, or upload services.
+for (const url of [
+  'https://api.locketcamera.com/upload',
+  'https://us-central1-locket-4252a.cloudfunctions.net/getViews',
+  'https://firebasestorage.googleapis.com/v0/b/locket/o',
+  'https://firebaseremoteconfig.googleapis.com/v1/projects/locket-4252a/namespaces/firebase:fetch'
+]) {
+  for (const name of ['gold', 'request']) {
+    check(Object.keys(run(name, {url})).length === 0, `${name} leaves ${url} unchanged`);
+  }
+}
+const moduleSource = fs.readFileSync(path.join(__dirname, 'PhuBon.module'), 'utf8');
+check(!moduleSource.includes('firebaseremoteconfig.googleapis.com'), 'Firebase is absent from active hooks and MITM hostnames');
+check(!moduleSource.includes('phubon_features'), 'Remote Config rewrite is disabled');
+check((moduleSource.match(/script-path=/g) || []).length === 2, 'only the two RevenueCat hooks remain');
+check((moduleSource.match(/\?v=1\.1\.0/g) || []).length === 2, 'new version URLs avoid an old script cache');
 for (const source of Object.values(scripts)) {
   check(!/\$(?:httpClient|httpAPI|task)|\bfetch\s*\(|XMLHttpRequest|\beval\s*\(/.test(source), 'no active network calls or evaluated downloads');
 }
