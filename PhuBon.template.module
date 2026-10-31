@@ -1,0 +1,10 @@
+#!name=Phú Bôn - Locket cá nhân
+#!desc=Phien ban ca nhan 1.0.0. Ngay Gold chinh trong phubon-gold.js. Chua kiem thu tren iPhone.
+
+[Script]
+phubon_gold = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/v1\/(?:receipts|subscribers\/[^/?]+)\/?(?:\?.*)?$, script-path=https://raw.githubusercontent.com/GITHUB_USERNAME/phubon-locket/main/phubon-gold.js, requires-body=true, max-size=-1, timeout=10
+phubon_request = type=http-request, pattern=^https:\/\/api\.revenuecat\.com\/v1\/(?:receipts|subscribers\/[^/?]+)\/?(?:\?.*)?$, script-path=https://raw.githubusercontent.com/GITHUB_USERNAME/phubon-locket/main/phubon-request.js, timeout=10
+phubon_features = type=http-response, pattern=^https:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+, script-path=https://raw.githubusercontent.com/GITHUB_USERNAME/phubon-locket/main/phubon-features.js, requires-body=true, max-size=-1, timeout=10
+
+[MITM]
+hostname = %APPEND%, api.revenuecat.com, firebaseremoteconfig.googleapis.com
