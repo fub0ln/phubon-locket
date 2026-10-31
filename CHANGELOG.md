@@ -1,5 +1,11 @@
 # Thay đổi
 
+## 1.4.0 — 31/10/2026 — lựa chọn riêng tư
+
+Người dùng xác nhận các chức năng Full 1.3 đã ổn nhưng thiếu đăng riêng tư. Thêm `send_to_self_only_mode = always_enabled` từ bộ gốc để thử bật lại lựa chọn gửi cho chính mình. Đối chiếu đầu ra với 1.3 cho thấy đây là thay đổi cấu hình duy nhất; không thay danh sách người nhận, giá trị visibility, upload, QR hay API người xem.
+
+Dùng file riêng `phubon-full-1.4.js` để giữ nguyên runtime và module Full 1.3 làm dự phòng. Bổ sung 43 kiểm tra đối chiếu; 83 kiểm tra Full dự phòng vẫn qua. Chưa xác nhận nút riêng tư hay quyền riêng tư thực tế của bản 1.4 trên iPhone/máy chủ. Người dùng cần kiểm tra người nhận trước khi gửi.
+
 ## 1.3.0 — 31/10/2026 — khôi phục bộ chức năng
 
 Người dùng đã xác nhận bản 1.2 hiện QR, đúng ngày Gold, đăng bài và hiện người xem. Theo yêu cầu khôi phục bộ chức năng ban đầu, thêm `phubon-full.js` với 103 entry, 217 caption và 35 mã bộ lọc; video đặt mục tiêu 30 giây, các cờ âm thanh và giao diện được khôi phục.

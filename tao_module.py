@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 
 
-def render(owner: str, repo: str = "phubon-locket", ref: str = "main", include_qr: bool = True, include_full: bool = True) -> str:
+def render(owner: str, repo: str = "phubon-locket", ref: str = "main", include_qr: bool = True, include_full: bool = True, include_private: bool = True) -> str:
     if not re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?", owner):
         raise ValueError("Ten tai khoan GitHub khong hop le")
     if not re.fullmatch(r"[A-Za-z0-9_.-]+", repo) or repo in {".", ".."}:
@@ -16,13 +16,16 @@ def render(owner: str, repo: str = "phubon-locket", ref: str = "main", include_q
     pattern = r"^https:\/\/api\.revenuecat\.com\/v1\/(?:receipts|subscribers\/[^/?]+)\/?(?:\?.*)?$"
     if include_qr and include_full:
         firebase = r"^https:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+"
-        return f"""#!name=Phú Bôn - Locket 1.3 Full
-#!desc=1.3.0: caption, filter, video 30s, am thanh va giao dien. Giu cau hinh upload va nguoi xem cua may chu.
+        title = "Phú Bôn - Locket 1.4 Full riêng tư" if include_private else "Phú Bôn - Locket 1.3 Full"
+        description = "1.4.0: them lua chon Chi minh toi vao ban Full 1.3. Kiem tra nguoi nhan truoc khi gui." if include_private else "1.3.0: caption, filter, video 30s, am thanh va giao dien. Giu cau hinh upload va nguoi xem cua may chu."
+        full_script = "phubon-full-1.4.js?v=1.4.0" if include_private else "phubon-full.js?v=1.3.0"
+        return f"""#!name={title}
+#!desc={description}
 
 [Script]
 phubon_gold = type=http-response, pattern={pattern}, script-path={base}/phubon-gold.js?v=1.1.0, requires-body=true, max-size=-1, timeout=10
 phubon_request = type=http-request, pattern={pattern}, script-path={base}/phubon-request.js?v=1.1.0, timeout=10
-phubon_full = type=http-response, pattern={firebase}, script-path={base}/phubon-full.js?v=1.3.0, requires-body=true, max-size=-1, timeout=10
+phubon_full = type=http-response, pattern={firebase}, script-path={base}/{full_script}, requires-body=true, max-size=-1, timeout=10
 
 [MITM]
 hostname = %APPEND%, api.revenuecat.com, firebaseremoteconfig.googleapis.com
@@ -60,7 +63,8 @@ if __name__ == "__main__":
     modes = parser.add_mutually_exclusive_group()
     modes.add_argument("--baseline", action="store_true", help="Tao lai ban 1.1 khong them QR")
     modes.add_argument("--qr-only", action="store_true", help="Tao lai ban 1.2 chi them QR")
+    modes.add_argument("--full-1-3", action="store_true", help="Tao lai ban Full 1.3 chua them rieng tu")
     parser.add_argument("--output", default="PhuBon.module")
     args = parser.parse_args()
-    Path(args.output).write_text(render(args.owner, args.repo, args.ref, include_qr=not args.baseline, include_full=not args.qr_only), encoding="utf-8")
+    Path(args.output).write_text(render(args.owner, args.repo, args.ref, include_qr=not args.baseline, include_full=not args.qr_only, include_private=not args.full_1_3), encoding="utf-8")
     print(f"Da tao {args.output}")

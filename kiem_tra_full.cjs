@@ -85,7 +85,7 @@ for (const options of [
 ]) check(Object.keys(run(options)).length === 0, 'unrelated, invalid and unchanged responses preserved');
 check(!/\$(?:httpClient|httpAPI|task)|\bfetch\s*\(|XMLHttpRequest|\beval\s*\(/.test(source), 'no outgoing requests or evaluated remote code');
 const fullModule = fs.readFileSync(path.join(__dirname,'PhuBon_1_3_Full.module'),'utf8');
-check(fullModule === fs.readFileSync(path.join(__dirname,'PhuBon.module'),'utf8'), 'latest module matches explicit full version');
+check(fullModule.includes('phubon-full.js?v=1.3.0') && !fullModule.includes('phubon-full-1.4.js'), 'original Full fallback keeps its tested script');
 check((fullModule.match(/script-path=/g)||[]).length === 3 && fullModule.includes('phubon-full.js?v=1.3.0'), 'single full configuration hook');
 check(!fullModule.includes('phubon-qr.js') && !fullModule.includes('phubon-features.js'), 'no overlapping QR or legacy full hooks');
 console.log(`Passed ${checks} full-feature regression checks. Device testing remains required.`);
