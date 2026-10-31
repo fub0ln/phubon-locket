@@ -124,8 +124,8 @@ for (const options of [
   {url:'https://firebaseremoteconfig.googleapis.com/v1/projects/another-app/namespaces/firebase:fetch'},
   {url:'https://firebaseremoteconfig.googleapis.com.attacker.invalid/v1/projects/locket-4252a/namespaces/firebase:fetch'}
 ]) check(Object.keys(run('qr', options)).length === 0, 'QR patch preserves unrelated, invalid and unchanged responses');
-const qrModule = fs.readFileSync(path.join(__dirname,'PhuBon.module'),'utf8');
-check(qrModule === fs.readFileSync(path.join(__dirname,'PhuBon_1_2.module'),'utf8'), 'latest and explicit QR module are identical');
+const qrModule = fs.readFileSync(path.join(__dirname,'PhuBon_1_2.module'),'utf8');
+check(qrModule.includes('phubon-qr.js?v=1.2.0') && !qrModule.includes('phubon-full.js'), 'working QR fallback keeps only its original hook');
 check((qrModule.match(/script-path=/g)||[]).length === 3 && qrModule.includes('phubon-qr.js?v=1.2.0'), 'only the dedicated QR hook is added');
 check(!qrModule.includes('phubon-features.js'), 'old bulk feature rewrite stays disabled');
 for (const source of Object.values(scripts)) {

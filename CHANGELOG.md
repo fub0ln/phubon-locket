@@ -1,5 +1,13 @@
 # Thay đổi
 
+## 1.3.0 — 31/10/2026 — khôi phục bộ chức năng
+
+Người dùng đã xác nhận bản 1.2 hiện QR, đúng ngày Gold, đăng bài và hiện người xem. Theo yêu cầu khôi phục bộ chức năng ban đầu, thêm `phubon-full.js` với 103 entry, 217 caption và 35 mã bộ lọc; video đặt mục tiêu 30 giây, các cờ âm thanh và giao diện được khôi phục.
+
+Ghép JSON với cấu hình hiện có, giữ các trường QR và camera gốc, các bộ lọc/caption của máy chủ và không nhân đôi ID. Bảo toàn toàn bộ đường upload, storage, CDN, Firestore/Cloud Functions, các thiết lập lượt xem và phạm vi gửi bài. Giữ bitrate/codec/phần cứng camera và quyền danh bạ gốc.
+
+Giữ nguyên Gold/request, script QR 1.2 và các module 1.1/1.2 dự phòng. Bản Full chỉ có một hook cấu hình Firebase. Kiểm tra: 188 phép kiểm tra nền và 83 phép kiểm tra Full đã qua; bản Full chưa được kiểm thử trên điện thoại.
+
 ## 1.2.0 — 31/10/2026 — QR riêng
 
 Người dùng xác nhận bản 1.1 đã đăng bài, hiển thị người xem và đúng ngày Gold; QR chưa xuất hiện. Bản 1.2 thêm hook `phubon-qr.js` chỉ sửa `qr_code_config` và `profile_menu_v2_enabled`. Giữ các trường QR gốc và toàn bộ thông số upload, camera, storage, CDN, lượt xem. Bỏ qua NO_CHANGE và phản hồi không hợp lệ.
