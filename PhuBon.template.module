@@ -1,8 +1,8 @@
 #!name=Phú Bôn - Locket 1.4 Full riêng tư
-#!desc=1.4.0: them lua chon Chi minh toi vao ban Full 1.3. Kiem tra nguoi nhan truoc khi gui.
+#!desc=1.4.1: ngay Gold 01/11/2005 (GMT+7). Giu cac chuc nang Full va lua chon Chi minh toi cua ban 1.4.
 
 [Script]
-phubon_gold = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/v1\/(?:receipts|subscribers\/[^/?]+)\/?(?:\?.*)?$, script-path=https://raw.githubusercontent.com/GITHUB_USERNAME/phubon-locket/main/phubon-gold.js?v=1.1.0, requires-body=true, max-size=-1, timeout=10
+phubon_gold = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/v1\/(?:receipts|subscribers\/[^/?]+)\/?(?:\?.*)?$, script-path=https://raw.githubusercontent.com/GITHUB_USERNAME/phubon-locket/main/phubon-gold.js?v=1.4.1, requires-body=true, max-size=-1, timeout=10
 phubon_request = type=http-request, pattern=^https:\/\/api\.revenuecat\.com\/v1\/(?:receipts|subscribers\/[^/?]+)\/?(?:\?.*)?$, script-path=https://raw.githubusercontent.com/GITHUB_USERNAME/phubon-locket/main/phubon-request.js?v=1.1.0, timeout=10
 phubon_full = type=http-response, pattern=^https:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+, script-path=https://raw.githubusercontent.com/GITHUB_USERNAME/phubon-locket/main/phubon-full-1.4.js?v=1.4.0, requires-body=true, max-size=-1, timeout=10
 

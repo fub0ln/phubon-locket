@@ -1,11 +1,11 @@
-// Phu Bon - local Locket entitlement response customization, v1.0.0.
+// Phu Bon - local Locket entitlement response customization, v1.4.1.
 // Changes only the response received by this device; does not record a purchase.
 (function () {
   "use strict";
 
   // EDIT THESE TWO DATES. +07:00 is Viet Nam time.
   var SETTINGS = {
-    goldSince: "2026-10-31T00:00:00+07:00",
+    goldSince: "2005-11-01T00:00:00+07:00",
     goldUntil: "2099-12-31T23:59:59+07:00",
     productId: "locket_1600_1y",
     entitlementId: "Gold"

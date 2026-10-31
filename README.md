@@ -1,6 +1,6 @@
 # Phú Bôn — Locket 1.4 Full riêng tư
 
-Phiên bản 1.4.0 · 31/10/2026. Thêm lựa chọn gửi cho chính mình vào bản Full 1.3.
+Phiên bản 1.4.1 · 31/10/2026. Đổi ngày hiển thị Gold thành 01/11/2005 theo múi giờ Việt Nam; giữ bộ chức năng và lựa chọn gửi cho chính mình của bản 1.4.
 
 Người dùng xác nhận các chức năng bản Full 1.3 đã ổn nhưng thiếu đăng riêng tư. Bản 1.4 bổ sung cờ `send_to_self_only_mode = always_enabled` có trong bộ cấu hình gốc. Chưa xác minh lựa chọn người nhận và quyền riêng tư thực tế của bản 1.4 trên điện thoại/máy chủ.
 
@@ -37,7 +37,7 @@ Dữ liệu caption/filter được khôi phục từ bản 1.0 tại commit `7c
 
 ## 3. Các cấu hình được bảo toàn
 
-Giữ phần Gold/request và ngày 31/10/2026 của bản 1.2. `phubon-qr.js` cùng các module 1.1 và 1.2 vẫn được lưu làm bản dự phòng.
+Giữ cách xử lý Gold/request của bản 1.2; bản 1.4.1 đặt ngày hiển thị Gold thành 01/11/2005. `phubon-qr.js` cùng các module 1.1 và 1.2 vẫn được lưu làm bản dự phòng.
 
 Không khôi phục các thay đổi đường upload, bucket lưu trữ, CDN, các nhánh Firestore/Cloud Functions hoặc cách lấy dữ liệu người xem của 1.0. Không đặt danh sách người nhận hoặc quyền hiển thị bài đăng trên máy chủ. Giữ khả năng phần cứng camera gốc. Các giá trị gốc được bảo toàn, kể cả khi bản Full thêm các mục giao diện khác.
 
@@ -67,10 +67,10 @@ Cấu hình đã lưu trong Locket có thể khiến thay đổi chưa xuất hi
 
 Cấu hình 30 giây, số bạn bè lớn hoặc các cờ giao diện không thay đổi hạn mức và quyền mà máy chủ áp dụng. Không cam kết mọi mã bộ lọc/tính năng còn được hỗ trợ trên mọi phiên bản Locket. Phần Gold là phản hồi xử lý trên thiết bị, không tạo giao dịch mua với Apple.
 
-`SETTINGS.goldSince` vẫn là `2026-10-31T00:00:00+07:00`, `goldUntil` là `2099-12-31T23:59:59+07:00` trong `phubon-gold.js`.
+`SETTINGS.goldSince` là `2005-11-01T00:00:00+07:00`, `goldUntil` là `2099-12-31T23:59:59+07:00` trong `phubon-gold.js`.
 
 Chạy `node kiem_tra.cjs`, `node kiem_tra_full.cjs` và `node kiem_tra_rieng_tu.cjs` để kiểm tra mã với dữ liệu giả lập. Bản này qua 188 kiểm tra nền và 83 kiểm tra Full, gồm bảo toàn API/upload/lượt xem, metadata QR, caption gốc, khả năng camera, cấu hình lỗi và việc áp dụng lại không nhân đôi caption. Bản 1.4 bổ sung 43 kiểm tra đối chiếu, xác nhận chỉ đổi cờ self-only so với 1.3 và không đổi dữ liệu người nhận/cấu hình khác. Các kiểm tra này không xác minh quyền riêng tư thực tế trên máy chủ.
 
 Trình tạo module mặc định tạo Full. Dùng `--qr-only` để tạo bản 1.2, hoặc `--baseline` để tạo bản 1.1. Dùng `--full-1-3` để tạo lại Full 1.3.
 
-Sau khi bản Full được xác nhận hoạt động ổn định, tiếp tục phần NextDNS riêng. Trong lúc thử cần để RevenueCat kết nối được để phân biệt dữ liệu mới với trạng thái đã lưu.
+Khi đổi ngày: đóng Locket, tạm chọn DNS Tự động, cập nhật module Full 1.4.1 rồi bật Shadowrocket và mở lại Locket để nhận ngày mới. Sau khi kiểm tra ngày, đóng Locket, tắt VPN và chọn lại DNS NextDNS riêng. Module dùng `phubon-gold.js?v=1.4.1` để phân biệt với URL script cũ. Ngày trên giao diện không phải một giao dịch mua được ghi nhận với Apple.

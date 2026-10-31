@@ -38,7 +38,7 @@ const goldResult = JSON.parse(run('gold').body);
 const gold = goldResult.subscriber.entitlements.Gold;
 const subscription = goldResult.subscriber.subscriptions[gold.product_identifier];
 check(gold.product_identifier === 'locket_1600_1y', 'known product identifier is consistent');
-check(gold.purchase_date === '2026-10-30T17:00:00.000Z', 'Viet Nam date converted correctly');
+check(gold.purchase_date === '2005-10-31T17:00:00.000Z', 'Viet Nam date converted correctly');
 check(subscription.purchase_date === gold.purchase_date && subscription.original_purchase_date === gold.purchase_date, 'purchase dates consistent');
 check(subscription.expires_date === gold.expires_date, 'expiration dates consistent');
 check(goldResult.subscriber.entitlements.Other.product_identifier === 'other-product', 'other entitlements preserved');

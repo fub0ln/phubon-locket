@@ -1,5 +1,12 @@
 # Thay đổi
 
+## 1.4.1 — 31/10/2026 — ngày hiển thị Gold
+
+- Đặt `goldSince` thành `2005-11-01T00:00:00+07:00` theo yêu cầu; các trường ngày của quyền Gold và sản phẩm cùng được chuyển thành `2005-10-31T17:00:00.000Z`.
+- Cập nhật URL script Gold trong module Full, template và trình tạo lên `?v=1.4.1` để tránh dùng lại URL đã lưu đệm.
+- Cập nhật hướng dẫn nạp ngày mới khi đang dùng NextDNS; giữ các script chức năng Full, QR, request và ngày hết hạn hiện có.
+
+
 ## 1.4.0 — 31/10/2026 — lựa chọn riêng tư
 
 Người dùng xác nhận các chức năng Full 1.3 đã ổn nhưng thiếu đăng riêng tư. Thêm `send_to_self_only_mode = always_enabled` từ bộ gốc để thử bật lại lựa chọn gửi cho chính mình. Đối chiếu đầu ra với 1.3 cho thấy đây là thay đổi cấu hình duy nhất; không thay danh sách người nhận, giá trị visibility, upload, QR hay API người xem.

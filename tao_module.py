@@ -17,13 +17,13 @@ def render(owner: str, repo: str = "phubon-locket", ref: str = "main", include_q
     if include_qr and include_full:
         firebase = r"^https:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+"
         title = "Phú Bôn - Locket 1.4 Full riêng tư" if include_private else "Phú Bôn - Locket 1.3 Full"
-        description = "1.4.0: them lua chon Chi minh toi vao ban Full 1.3. Kiem tra nguoi nhan truoc khi gui." if include_private else "1.3.0: caption, filter, video 30s, am thanh va giao dien. Giu cau hinh upload va nguoi xem cua may chu."
+        description = "1.4.1: ngay Gold 01/11/2005 (GMT+7). Giu cac chuc nang Full va lua chon Chi minh toi cua ban 1.4." if include_private else "1.3.0: caption, filter, video 30s, am thanh va giao dien. Giu cau hinh upload va nguoi xem cua may chu."
         full_script = "phubon-full-1.4.js?v=1.4.0" if include_private else "phubon-full.js?v=1.3.0"
         return f"""#!name={title}
 #!desc={description}
 
 [Script]
-phubon_gold = type=http-response, pattern={pattern}, script-path={base}/phubon-gold.js?v=1.1.0, requires-body=true, max-size=-1, timeout=10
+phubon_gold = type=http-response, pattern={pattern}, script-path={base}/phubon-gold.js?v=1.4.1, requires-body=true, max-size=-1, timeout=10
 phubon_request = type=http-request, pattern={pattern}, script-path={base}/phubon-request.js?v=1.1.0, timeout=10
 phubon_full = type=http-response, pattern={firebase}, script-path={base}/{full_script}, requires-body=true, max-size=-1, timeout=10
 
